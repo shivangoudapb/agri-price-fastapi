@@ -3,7 +3,8 @@ import pandas as pd
 import joblib
 
 app = FastAPI(
-    title="Agri Price Forecast API"
+    title="Agri Price Forecast API",
+    version="1.0.0"
 )
 
 model = joblib.load(
@@ -35,18 +36,21 @@ def home():
     }
 
 
+@app.get("/health")
+def health():
+    return {
+        "status": "healthy"
+    }
+
+
 @app.post("/predict")
 def predict(data: dict):
 
-    df = pd.DataFrame(
-        [data]
-    )
+    df = pd.DataFrame([data])
 
     df = df[FEATURES]
 
-    prediction = model.predict(
-        df
-    )[0]
+    prediction = model.predict(df)[0]
 
     return {
         "forecasted_price": float(prediction)
